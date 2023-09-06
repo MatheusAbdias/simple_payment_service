@@ -1,16 +1,20 @@
-package models
+package models_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/MatheusAbdias/simple_payment_service/domain/models"
+)
 
 func TestUserModelValidation(t *testing.T) {
 	testCases := []struct {
 		name        string
-		user        *User
+		user        *models.User
 		expectedErr bool
 	}{
 		{
 			name: "Should be valid user",
-			user: &User{
+			user: &models.User{
 				FullName: "Jon Doe",
 				Email:    "test@test.com",
 				Password: "password",
@@ -20,7 +24,7 @@ func TestUserModelValidation(t *testing.T) {
 		},
 		{
 			name: "Should return error when user is invalid missing email",
-			user: &User{
+			user: &models.User{
 				FullName: "Jon Doe",
 				Email:    "",
 				Password: "password",
@@ -30,7 +34,7 @@ func TestUserModelValidation(t *testing.T) {
 		},
 		{
 			name: "Should return error when user is invalid  email",
-			user: &User{
+			user: &models.User{
 				FullName: "Jon Doe",
 				Email:    "invalid_email",
 				Password: "password",
@@ -41,7 +45,7 @@ func TestUserModelValidation(t *testing.T) {
 
 		{
 			name: "Should return error when user is invalid missing password",
-			user: &User{
+			user: &models.User{
 				FullName: "Jon Doe",
 				Email:    "test@test.com",
 				Password: "",
@@ -51,7 +55,7 @@ func TestUserModelValidation(t *testing.T) {
 		},
 		{
 			name: "Should return error when user is invalid missing document",
-			user: &User{
+			user: &models.User{
 				FullName: "Jon Doe",
 				Email:    "test@test.com",
 				Password: "password",
@@ -61,7 +65,7 @@ func TestUserModelValidation(t *testing.T) {
 		},
 		{
 			name: "Should return error when user is invalid document cpf",
-			user: &User{
+			user: &models.User{
 				FullName: "Jon Doe",
 				Email:    "test@test.com",
 				Password: "password",
