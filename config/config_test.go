@@ -1,14 +1,13 @@
-package config_test
+package config
 
 import (
 	"testing"
 
-	"github.com/MatheusAbdias/simple_payment_service/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestShouldBeLoadConfig(t *testing.T) {
-	config, err := config.LoadConfig("../")
+	config, err := LoadConfig("../")
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, config.Driver)

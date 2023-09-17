@@ -1,24 +1,24 @@
-package models
+package users
 
 import (
-	"github.com/MatheusAbdias/simple_payment_service/domain/dto"
-	CustomValidators "github.com/MatheusAbdias/simple_payment_service/pkg/validators"
+	Validators "github.com/MatheusAbdias/simple_payment_service/domain/users/validators"
+	utils "github.com/MatheusAbdias/simple_payment_service/pkg/utils"
 	"github.com/go-playground/validator/v10"
 )
 
 type User struct {
+	Id       string `validate:"required,uuid4"`
 	FullName string `validate:"required,min=3,max=255"`
 	Email    string `validate:"required,email"`
-	Password string `validate:"required"`
 	Document string `validate:"required,min=11,max=14,document"`
 }
 
-func NewUser(userDTOP *dto.UserDTO) (*User, error) {
+func NewUser(userDTO *UserDTO) (*User, error) {
 	user := &User{
-		FullName: userDTOP.FullName,
-		Email:    userDTOP.Email,
-		Password: userDTOP.Password,
-		Document: userDTOP.Document,
+		Id:       utils.NewUUID(),
+		FullName: userDTO.FullName,
+		Email:    userDTO.Email,
+		Document: userDTO.Document,
 	}
 
 	err := user.Validate()
@@ -31,7 +31,7 @@ func NewUser(userDTOP *dto.UserDTO) (*User, error) {
 
 func (u *User) Validate() error {
 	validate := validator.New(validator.WithRequiredStructEnabled())
-	err := validate.RegisterValidation("document", CustomValidators.ValidateDocument)
+	err := validate.RegisterValidation("document", Validators.ValidateDocument)
 
 	if err != nil {
 		return err

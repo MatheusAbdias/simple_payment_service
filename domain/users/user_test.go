@@ -1,74 +1,76 @@
-package models_test
+package users_test
 
 import (
 	"testing"
 
-	"github.com/MatheusAbdias/simple_payment_service/domain/models"
+	"github.com/MatheusAbdias/simple_payment_service/domain/users"
+
+	utils "github.com/MatheusAbdias/simple_payment_service/pkg/utils"
 )
 
 func TestUserModelValidation(t *testing.T) {
 	testCases := []struct {
 		name        string
-		user        *models.User
+		user        *users.User
 		expectedErr bool
 	}{
 		{
 			name: "Should be valid user",
-			user: &models.User{
+			user: &users.User{
+				Id:       utils.NewUUID(),
 				FullName: "Jon Doe",
 				Email:    "test@test.com",
-				Password: "password",
 				Document: "21472605000155",
 			},
 			expectedErr: false,
 		},
 		{
 			name: "Should return error when user is invalid missing email",
-			user: &models.User{
+			user: &users.User{
+				Id:       utils.NewUUID(),
 				FullName: "Jon Doe",
 				Email:    "",
-				Password: "password",
 				Document: "21472605000155",
 			},
 			expectedErr: true,
 		},
 		{
 			name: "Should return error when user is invalid  email",
-			user: &models.User{
+			user: &users.User{
+				Id:       utils.NewUUID(),
 				FullName: "Jon Doe",
 				Email:    "invalid_email",
-				Password: "password",
 				Document: "21472605000155",
 			},
 			expectedErr: true,
 		},
 
 		{
-			name: "Should return error when user is invalid missing password",
-			user: &models.User{
+			name: "Should return error when user is invalid  uuid",
+			user: &users.User{
+				Id:       "123",
 				FullName: "Jon Doe",
 				Email:    "test@test.com",
-				Password: "",
 				Document: "21472605000155",
 			},
 			expectedErr: true,
 		},
 		{
 			name: "Should return error when user is invalid missing document",
-			user: &models.User{
+			user: &users.User{
+				Id:       utils.NewUUID(),
 				FullName: "Jon Doe",
 				Email:    "test@test.com",
-				Password: "password",
 				Document: "",
 			},
 			expectedErr: true,
 		},
 		{
 			name: "Should return error when user is invalid document cpf",
-			user: &models.User{
+			user: &users.User{
+				Id:       utils.NewUUID(),
 				FullName: "Jon Doe",
 				Email:    "test@test.com",
-				Password: "password",
 				Document: "11111111111",
 			},
 			expectedErr: true,
