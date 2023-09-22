@@ -9,12 +9,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-func main() {
-	Migrate()
-}
-
 func Migrate() {
-
 	dbUrl := os.Getenv("DATABASE_URL")
 	m, err := migrate.New("file://./../../../cmd/migrations/", dbUrl)
 

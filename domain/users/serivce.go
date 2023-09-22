@@ -14,21 +14,16 @@ func NewService(repo UserRepository) *Service {
 	}
 }
 
-func (service *Service) CreateUser(ctx context.Context, userDTO *UserDTO) (*User, error) {
-	user, err := NewUser(userDTO)
+func (s *Service) RegisterUser(ctx context.Context, userDTO *UserDTO) (*User, error) {
+	user, err := NewUserWithWallet(userDTO)
 	if err != nil {
 		return nil, err
 	}
 
-	if service.FindUserByEmail(ctx, user.Email) {
-		return nil, &ErrEmailAlreadyRegistered{}
+	if s.repo.FindUserByEmailOrDocument(ctx, user.Email, user.Document) {
+		return nil, ErrUserInfoAlreadyRegistered{}
 	}
-
-	if service.FindUserByDocument(ctx, user.Document) {
-		return nil, &ErrDocumentAlreadyRegistered{}
-	}
-
-	err = service.repo.CreateUser(ctx, user)
+	err = s.repo.CreateUserWithWallet(ctx, user)
 
 	if err != nil {
 		return nil, err
@@ -36,10 +31,10 @@ func (service *Service) CreateUser(ctx context.Context, userDTO *UserDTO) (*User
 	return user, nil
 }
 
-func (service *Service) FindUserByEmail(ctx context.Context, email string) bool {
-	return service.repo.FindUserByEmail(ctx, email)
-}
-
-func (service *Service) FindUserByDocument(ctx context.Context, document string) bool {
-	return service.repo.FindUserByDocument(ctx, document)
+func (s *Service) FindUserByEmailOrDocument(
+	ctx context.Context,
+	email string,
+	document string,
+) bool {
+	return s.repo.FindUserByEmailOrDocument(ctx, email, document)
 }

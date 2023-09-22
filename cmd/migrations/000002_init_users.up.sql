@@ -1,8 +1,8 @@
 CREATE TABLE
     IF NOT EXISTS users (
         id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        email varchar(300) NOT NULL UNIQUE,
-        full_name VARCHAR(300) NOT NULL,
+        email varchar(255) NOT NULL UNIQUE,
+        full_name VARCHAR(255) NOT NULL,
         document varchar(14) NOT NULL UNIQUE
     );
 
