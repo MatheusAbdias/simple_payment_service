@@ -31,8 +31,8 @@ func validateCPF(cpf string) bool {
 }
 
 func validateCNPJ(cnpj string) bool {
-	firstDigit := calculeteCNPJDigits(cnpj[:12], 5)
-	secondDigit := calculeteCNPJDigits(cnpj[:13], 6)
+	firstDigit := calculateCNPJDigits(cnpj[:12], 5)
+	secondDigit := calculateCNPJDigits(cnpj[:13], 6)
 
 	return cnpj[12] == firstDigit && cnpj[13] == secondDigit
 }
@@ -53,7 +53,7 @@ func calculateCPFDigit(subString string) byte {
 	return byte(11 - rest + '0')
 }
 
-func calculeteCNPJDigits(subString string, weight int) byte {
+func calculateCNPJDigits(subString string, weight int) byte {
 	sum := 0
 	for _, char := range subString {
 		sum += int(char-'0') * weight
