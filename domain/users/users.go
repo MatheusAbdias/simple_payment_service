@@ -2,6 +2,7 @@ package users
 
 import (
 	Validators "github.com/MatheusAbdias/simple_payment_service/domain/users/validators"
+	wallets "github.com/MatheusAbdias/simple_payment_service/domain/wallets"
 	utils "github.com/MatheusAbdias/simple_payment_service/pkg/utils"
 	"github.com/go-playground/validator/v10"
 )
@@ -11,18 +12,26 @@ type User struct {
 	FullName string `validate:"required,min=3,max=255"`
 	Email    string `validate:"required,email"`
 	Document string `validate:"required,min=11,max=14,document"`
+	Wallet   *wallets.Wallet
 }
 
-func NewUser(userDTO *UserDTO) (*User, error) {
+func NewUserWithWallet(userDTO *UserDTO) (*User, error) {
+	var err error
+	var wallet *wallets.Wallet
+	userID := utils.NewUUID()
+
+	if wallet, err = wallets.NewWallet(userID); err != nil {
+		return nil, err
+	}
+
 	user := &User{
-		Id:       utils.NewUUID(),
+		Id:       userID,
 		FullName: userDTO.FullName,
 		Email:    userDTO.Email,
 		Document: userDTO.Document,
+		Wallet:   wallet,
 	}
-
-	err := user.Validate()
-	if err != nil {
+	if err = user.Validate(); err != nil {
 		return nil, err
 	}
 

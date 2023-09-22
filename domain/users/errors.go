@@ -1,15 +1,8 @@
 package users
 
-type ErrEmailAlreadyRegistered struct {
+type ErrUserInfoAlreadyRegistered struct {
 }
 
-func (err ErrEmailAlreadyRegistered) Error() string {
-	return "User with this email already registered"
-}
-
-type ErrDocumentAlreadyRegistered struct {
-}
-
-func (err ErrDocumentAlreadyRegistered) Error() string {
-	return "User with this document already registered"
+func (err ErrUserInfoAlreadyRegistered) Error() string {
+	return "User with this information  already registered"
 }

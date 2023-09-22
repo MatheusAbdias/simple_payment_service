@@ -17,14 +17,15 @@ func NewController(service *users.Service) *Controller {
 		service: service,
 	}
 }
-func (controller *Controller) Create(w http.ResponseWriter, r *http.Request) {
-	var userDTO users.UserDTO
-	if err := json.NewDecoder(r.Body).Decode(&userDTO); err != nil {
+
+func (controller *Controller) Signup(w http.ResponseWriter, r *http.Request) {
+	userDTO := users.NewUserDTO()
+	if err := json.NewDecoder(r.Body).Decode(userDTO); err != nil {
 		handleError(w, err, http.StatusBadRequest)
 		return
 	}
 
-	user, err := controller.service.CreateUser(r.Context(), &userDTO)
+	user, err := controller.service.RegisterUser(r.Context(), userDTO)
 	if err != nil {
 		handleError(w, err, http.StatusBadRequest)
 		return

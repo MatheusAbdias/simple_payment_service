@@ -8,8 +8,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/MatheusAbdias/simple_payment_service/domain/users"
 	domain "github.com/MatheusAbdias/simple_payment_service/domain/users"
 	"github.com/MatheusAbdias/simple_payment_service/domain/users/adapters"
+	"github.com/stretchr/testify/require"
 )
 
 func setup() *Controller {
@@ -18,7 +20,11 @@ func setup() *Controller {
 
 }
 
-func testRequest(method string, url string, body []byte) (*httptest.ResponseRecorder, *http.Request) {
+func testRequest(
+	method string,
+	url string,
+	body []byte,
+) (*httptest.ResponseRecorder, *http.Request) {
 	request, _ := http.NewRequest(method, url, bytes.NewReader(body))
 	recorder := httptest.NewRecorder()
 
@@ -90,10 +96,14 @@ func TestCreateUser(t *testing.T) {
 
 			recorder, request := testRequest("POST", "/users", requestBody)
 
-			controller.Create(recorder, request)
+			controller.Signup(recorder, request)
 
 			if status := recorder.Code; status != tc.expectedStatusCode {
-				t.Errorf("handler returned wrong status code: got %v want %v", recorder.Code, tc.expectedStatusCode)
+				t.Errorf(
+					"handler returned wrong status code: got %v want %v",
+					recorder.Code,
+					tc.expectedStatusCode,
+				)
 			}
 
 		})
@@ -102,69 +112,64 @@ func TestCreateUser(t *testing.T) {
 
 func TestShouldBeCantCreateUserWhenEmailIsAlreadyRegister(t *testing.T) {
 	controller := setup()
+	ctx := context.Background()
 
-	userDTO := &domain.UserDTO{
-		FullName: "Jon Doe",
-		Email:    "jon@emai.com",
+	firstUserDTO := &users.UserDTO{
+		FullName: "Jon Dow",
+		Email:    "jon@email.com",
 		Document: "68507344070",
 	}
-	var user *domain.User
-	var err error
-
-	if user, err = controller.service.CreateUser(context.Background(), userDTO); err != nil {
+	if _, err := controller.service.RegisterUser(ctx, firstUserDTO); err != nil {
 		t.Fatal(err)
 	}
 
-	invalidUser := &domain.UserDTO{
-		FullName: "Jon Doe",
-		Email:    user.Email,
+	invalidUser := &users.UserDTO{
+		FullName: "Jon Dow",
+		Email:    "JON@email.com",
 		Document: "57271936050",
 	}
 
 	var requestBody []byte
+	var err error
 	if requestBody, err = json.Marshal(invalidUser); err != nil {
 		t.Fatal(err)
 	}
 
 	recorder, request := testRequest("POST", "/users", requestBody)
 
-	controller.Create(recorder, request)
+	controller.Signup(recorder, request)
 
-	if status := recorder.Code; status != http.StatusBadRequest {
-		t.Errorf("handler returned wrong status code: got %v want %v", recorder.Code, http.StatusBadRequest)
-	}
+	require.Equal(t, http.StatusBadRequest, recorder.Code)
 }
 
 func TestShouldBeCantCreateUserWhenDocumentIsAlreadyRegister(t *testing.T) {
 	controller := setup()
+	ctx := context.Background()
 
-	userDTO := &domain.UserDTO{
-		FullName: "Jon Doe",
-		Email:    "jon@emai.com",
+	firstUserDTO := &users.UserDTO{
+		FullName: "Jon Dow",
+		Email:    "jon@email.com",
 		Document: "68507344070",
 	}
-	var err error
-
-	if _, err = controller.service.CreateUser(context.Background(), userDTO); err != nil {
+	if _, err := controller.service.RegisterUser(ctx, firstUserDTO); err != nil {
 		t.Fatal(err)
 	}
 
-	invalidUser := &domain.UserDTO{
-		FullName: "Jon Doe",
-		Email:    "other@emai.com",
+	invalidUser := &users.UserDTO{
+		FullName: "Mark Dow",
+		Email:    "mark@email.com",
 		Document: "68507344070",
 	}
 
 	var requestBody []byte
+	var err error
 	if requestBody, err = json.Marshal(invalidUser); err != nil {
 		t.Fatal(err)
 	}
 
 	recorder, request := testRequest("POST", "/users", requestBody)
 
-	controller.Create(recorder, request)
+	controller.Signup(recorder, request)
 
-	if status := recorder.Code; status != http.StatusBadRequest {
-		t.Errorf("handler returned wrong status code: got %v want %v", recorder.Code, http.StatusBadRequest)
-	}
+	require.Equal(t, http.StatusBadRequest, recorder.Code)
 }
